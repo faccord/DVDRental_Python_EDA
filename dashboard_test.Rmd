@@ -1,0 +1,101 @@
+---
+title: "Tablero - Alquiler de Películas"
+output: 
+  flexdashboard::flex_dashboard:
+    storyboard: true
+    social: menu
+    source: embed
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+```
+
+```{r, include=FALSE}
+data = read.csv(file="/Users/pablitopol/Downloads/Docente/Univ. Aconcagua/india.csv")
+final = read.csv(file="/Users/pablitopol/Downloads/Docente/Univ. Aconcagua/final.csv")
+```
+
+### La salida de los datos procesados en Python será tomada por R para generar un tablero rápido
+
+```{r}
+library(leaflet)
+leaflet() %>%
+  addTiles() %>%
+  addMarkers(lng=data$lon, lat=data$lat, popup=data$city)
+```
+
+***
+
+En el costado derecho podemos poner el texto descriptivo que nos sea útil. 
+
+
+### Podemos incluir cualquier tipo de gráfico
+
+```{r}
+library(plotly)
+sem_dia = as.data.frame(table(final$rental_hora, final$rental_diaSemana))
+fig <- plot_ly(z = sem_dia$Freq, x=sem_dia$Var2, y=sem_dia$Var1, type = "heatmap") %>% 
+  layout(title = 'Cantidad de alquileres por hora y día de la semana',
+         xaxis = list(title = 'Hora',
+                      zeroline = TRUE),
+         yaxis = list(title = 'Día de la Semana')
+         )
+fig
+```
+
+***
+
+Las librerías en R y en Python suelen ser similares. Algunas son homónimas, otras son copias idénticas
+
+
+### Incluso podemos usar distintos filtros interactivos que facilitan la visualiación de los datos
+
+```{r}
+library(dygraphs)
+library(dplyr)
+serie = final %>%
+    group_by(rental_fecha) %>%
+    summarise(suma = sum(amount))
+serie$rental_fecha = as.Date(serie$rental_fecha)
+dygraph(serie, main = "Suma total de alquileres (en dólares)") %>%
+  dySeries("suma", label = "Monto") %>%
+  dyOptions(stackedGraph = TRUE) %>%
+  dyRangeSelector(height = 20) %>% 
+  dyRangeSelector()
+```
+
+***
+
+Se pueden incorporar gráficos estáticos y dinámicos. Si bien este tipo de reportes permite una interacción muy básica con el usuario
+
+
+### Ejemplo de gráfico de barras con Plotly
+
+```{r}
+library(plotly)
+p <- ggplot(data = final, aes(x = rental_diaSemana, fill = rating)) +
+            geom_bar(position = "dodge")
+ggplotly(p)
+```
+
+***
+
+En este gráfico, hecho con Plotly, vemos la cantidad de alquileres por día de la semana y por tipo de película (clasificación)
+
+
+### MetricsGraphics - Scatter plot
+
+```{r}
+library(metricsgraphics)
+aux = final %>%
+          group_by(rental_diaSemana, rental_mes) %>%
+          summarise(suma = sum(amount))
+mjs_plot(aux, x=rental_diaSemana, y=rental_mes) %>%
+    mjs_point(size_accessor=suma, color_accessor = suma) %>%
+  mjs_labs(x="Día de la semana", y="Mes")
+```
+
+***
+
+Scatter plot mostrando total pagado en concepto de alquileres por día de la semana y mes
