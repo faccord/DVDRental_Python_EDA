@@ -9,6 +9,7 @@ Descripción de los archivos:
 * dashboard_test.html: tablero generado con R mediante el archivo anterior
 * india.csv: salida de datos para el país INDIA generados con el primer archivo (Python)
 * final.csv: salida de datos para ser usada en el tablero de R. Generado con el primer archivo (Python)
-* title.basics.tsv: datos públicos de IMDB. Títulos de películas
-* title.ratings.tsv: datos públicos de IMDB. Ratings de películas
 * rental.csv: datos de la tabla RENTAL extraidos desde Postgres. Alternativa para usar si la conexión a la base de datos mediante Python falla
+
+* title.basics.tsv: datos públicos de IMDB. Títulos de películas (descargar desde https://datasets.imdbws.com/title.basics.tsv.gz)
+* title.ratings.tsv: datos públicos de IMDB. Ratings de películas  (descargar desde https://datasets.imdbws.com/title.ratings.tsv.gz)
